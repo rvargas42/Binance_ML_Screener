@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block body %}
-
-
-
+<div class="scrollable-list">
+    <ul>
+        {% for symbol in symbols %}
+        <li>
+            {{ symbol }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

@@ -1,0 +1,54 @@
+[
+    {
+        "exchangeInformation": {
+                "$jsonSchema": {
+                  "bsonType": "object",
+                  "required": ["symbol", "status", "baseAsset", "quoteAsset", "orderTypes", "icebergAllowed", "ocoAllowed", "otoAllowed", "quoteOrderQtyMarketAllowed", "allowTrailingStop", "cancelReplaceAllowed", "isSpotTradingAllowed", "isMarginTradingAllowed"],
+                  "properties": {
+                    "symbol": {
+                      "bsonType": "string"
+                    },
+                    "status": {
+                      "bsonType": "string"
+                    },
+                    "baseAsset": {
+                      "bsonType": "string"
+                    },
+                    "quoteAsset": {
+                      "bsonType": "string"
+                    },
+                    "orderTypes": {
+                      "bsonType": "array",
+                      "items": {
+                        "bsonType": "string"
+                      }
+                    },
+                    "icebergAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "ocoAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "otoAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "quoteOrderQtyMarketAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "allowTrailingStop": {
+                      "bsonType": "bool"
+                    },
+                    "cancelReplaceAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "isSpotTradingAllowed": {
+                      "bsonType": "bool"
+                    },
+                    "isMarginTradingAllowed": {
+                      "bsonType": "bool"
+                    }
+                }
+            }
+        }
+    }
+]

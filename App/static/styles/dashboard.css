@@ -1,0 +1,43 @@
+:root{
+    --text-color: #111111;
+    --background-color:#EAF6FF;
+    --button-highlight:#FFA400;
+    --primary-color: #111111;
+    --contrast-color: #dce1de;
+    --prompt: #111111;
+    --prompt-in:#18a999;
+    --prompt-out:#FFA400;
+    --text-color-dark: #EAF6FF;
+    --contrast-color-dark:#000000;
+    --background-color-dark: #111111;
+    --primary-color-dark: #EAF6FF;
+    --highlight-color-dark:#18a999;
+    --button-highlight-dark:#FFA400;
+    --prompt-dark: #FFA400;
+    --font-size: 0.5em;
+}
+
+
+.scrollable-list {
+    width: 300px;           
+    height: 100vh;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.scrollable-list ul {
+    list-style-type: none; 
+    padding: 0;
+    margin: 0;
+}
+
+.scrollable-list li {
+    font-size: small;
+    margin-bottom: 5px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
