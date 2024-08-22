@@ -40,14 +40,14 @@ class wssBinance:
         else:
             try:
                 await self.connection.send(json.dumps({"method": "LIST_SUBSCRIPTIONS", "id": 3}))
-                subscriptions : list = await self.connection.recv()["result"]
+                subscriptions = await self.connection.recv()
                 print(subscriptions)
             except Exception as e:
                 print("websocket error while retrieving subscriptions: ", e)
         return subscriptions
 
     async def wssReceiveMsg(self):
-        while True:  # Keep trying to receive messages indefinitely
+        while True:
             try:
                 async for message in self.connection:
                     print(f"Received: {message}")
@@ -57,29 +57,26 @@ class wssBinance:
                 await self.wssSubscribe({
                     "method": "SUBSCRIBE",
                     "params": [
-                        "btcusdt@aggTrade",
-                        "btcusdt@depth"
+                        "!ticker@arr"
                     ],
                     "id": 1
                 })
             except Exception as e:
                 print(f"Error receiving messages: {e}")
-                await asyncio.sleep(5)  # Wait a bit before retrying
+                await asyncio.sleep(5)
 
 
 if __name__ == "__main__":
-
     async def main():
         binanceWss = wssBinance()
         await binanceWss.wssConnect()
         await binanceWss.wssSubscribe({
                 "method": "SUBSCRIBE",
                 "params": [
-                    " !ticker_<1H>@arr"
+                    "!ticker_1h@arr"
                 ],
                 "id": 1
             })
         await binanceWss.wssReceiveMsg()
-
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())

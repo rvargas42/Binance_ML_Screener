@@ -1,6 +1,6 @@
 import os, json, requests, flask
 from functools import wraps
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, session, render_template, url_for, request, redirect, jsonify
 from ETL_Pipeline.database_utils import getExchanceInfo
 from ETL_Pipeline.main import appDataPath, check_key
 
@@ -9,6 +9,7 @@ app = Flask(
 )
 
 app.config["API_KEY"] = None
+app.secret_key = "secret"
 
 @app.route("/testing")
 def testing():
@@ -33,9 +34,8 @@ def key_required(func):
         if not app.config["API_KEY"]:
             return redirect(url_for('set_key'))
         return render_template('dashboard.html')
-    return wrapper    
+    return wrapper
 
-@key_required #TODO: check 
 @app.route("/set_key", methods=["GET", "POST"])
 def set_key():
     if request.method == "POST" and check_key(key): #TODO: make check_key()
@@ -44,5 +44,15 @@ def set_key():
         return redirect(url_for('dashboard'))
     return render_template("set_key.html")
 
+@app.route("/handle_selection", methods=["POST", "GET"])
+def handle_selection():
+    selected_symbol = request.json.get('selected_symbol', "")
+    if selected_symbol:
+        session["selected_symbol"] = selected_symbol
+    else:
+        session.pop("selected_symbol", None)
+    print(session["selected_symbol"])
+    return jsonify({'symbol': session["selected_symbol"]}), 200
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
