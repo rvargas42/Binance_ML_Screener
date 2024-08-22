@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Set API Key</h1>
+    <form action="{{ url_for('set_key') }}" method="post">
+        <input type="text" name="api_key" id="api_key" style="width: 300px;" placeholder="Enter API Key">
+        <input type="submit" name="set_key" id="set_key" value="Set Key">
+    </form>
+{% endblock %}

@@ -1,11 +1,30 @@
 {% extends "base.html" %}
 {% block body %}
-<div class="scrollable-list">
+<div class="scrollable-list" id="resizable">
     <ul>
-        {% for symbol in symbols %}
+        {% for symbol in exchangeInformation %}
+        {% if symbol.status == 'TRADING' %}
         <li>
-            {{ symbol }}
+            <button class="list-asset">
+                <div class="asset-info">
+                    <div class="ticker">
+                        {{ symbol.symbol }}
+                    </div>
+                    <br>
+                    <div class="status">
+                        {{ symbol.status.capitalize() }}
+                    </div>
+                    <div class="volume">
+                        {{ symbol.status }}
+                    </div>
+                    <div class="price">
+                        {{ symbol.symbol }}
+                    </div>
+                </div>
+                <div class="symbol-compact-chart" style="border: 1px solid black;"></div>
+            </button>
         </li>
+        {% endif %}
         {% endfor %}
     </ul>
 </div>

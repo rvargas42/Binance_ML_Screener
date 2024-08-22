@@ -5,7 +5,8 @@ import os
 import time, datetime
 import requests
 import json
-import database_utils as mdb
+from .database_utils import collectionExists, createCollection, insertMany
+
 # ------------------------- read available endpoints ------------------------- #
 endPointsPath : str = os.path.join(os.path.dirname(__file__), "endPoints.json")
 appDataPath : str = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)), "Data")
@@ -13,6 +14,10 @@ with open(endPointsPath, "r") as endPointsFile:
     endPoints = json.load(endPointsFile)
 # ---------------------------------------------------------------------------- #
 # -------------------------- functions to fetch data ------------------------- #
+
+def check_key(key: str):
+    pass #TODO: make function to test api key with regex + request
+
 def getAvailableBaseEndpoint()->str:
     for baseEndPoint in endPoints["base"]:
         responseStatus = requests.get(baseEndPoint).status_code
@@ -29,10 +34,14 @@ def getExchangeInformation()->json:
     if ctimeM % 1 == 0: # update market status every 30 minutes
         url = baseEndpoint + endPointInfo["url"]
         response = requests.get(url).json()["symbols"]
-        if mdb.collectionExists("exchangeInformation") == False:
-            mdb.createCollection("exchangeInformation", True, "symbol")
-            mdb.insertMany("exchangeInformation", response)
+        if collectionExists("exchangeInformation") == False:
+            createCollection("exchangeInformation", True, "symbol")
+            insertMany("exchangeInformation", response)
         # else:
         #     mdb.updateMany("exchangeInformation", response)
 
-getExchangeInformation()
+
+
+
+if __name__ == "__main__":
+    pass

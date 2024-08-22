@@ -5,7 +5,6 @@
 from pymongo import MongoClient
 import os, json
 
-
 client = MongoClient("mongodb://localhost:27017")
 db = client["binance_screener"]
 
@@ -41,7 +40,6 @@ def filteredFields(data : dict, requiredFields) -> dict:
 def insertMany(name : str, data : list[dict]):
     collection = db[name]
     collection.insert_many(data)
-
 
 def getExchanceInfo():
     '''

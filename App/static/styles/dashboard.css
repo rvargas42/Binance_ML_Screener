@@ -17,27 +17,61 @@
     --font-size: 0.5em;
 }
 
+body{
+    height: 100vh;
+}
+
+.resizable-panel{
+    height: 100%;
+    display: inline-flex;
+    border: 1px solid black;
+}
+
 
 .scrollable-list {
-    width: 300px;           
-    height: 100vh;
+    width: 30%;           
+    height: inherit;
     overflow-y: scroll;
+    scrollbar-width: none;
     border: 1px solid #ccc;
     padding: 10px;
     background-color: #f9f9f9;
 }
 
 .scrollable-list ul {
-    list-style-type: none; 
+    list-style-type: none;
     padding: 0;
     margin: 0;
+    height: inherit;
 }
 
 .scrollable-list li {
     font-size: small;
     margin-bottom: 5px;
-    padding: 10px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
+    height: 15%;
+}
+
+.list-asset{
+    display: inline-flex;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    border: transparent;
+    margin: 0;
+    padding: 0;
+    text-align: start;
+}
+
+.asset-info{
+    display: block;
+    width: 30%;
+    margin-left: 10px;
+}
+
+.symbol-compact-chart{
+    height: 100%;
+    flex-grow: 1;
 }
