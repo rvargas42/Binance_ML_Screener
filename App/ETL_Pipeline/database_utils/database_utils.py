@@ -8,7 +8,7 @@ import os, json
 client = MongoClient("mongodb://localhost:27017")
 db = client["binance_screener"]
 
-with open(os.path.join(os.path.dirname(__file__), "schemas.json"), "r") as schemas:
+with open(os.path.join(os.path.dirname(__file__), "..", "schemas.json"), "r") as schemas:
     db_schemas = json.load(schemas)[0]
 
 def createCollection(name : str, customIndex : bool = False, *args):
@@ -18,7 +18,11 @@ def createCollection(name : str, customIndex : bool = False, *args):
         primaryKey = args[0]
         collection.create_index(primaryKey, unique=True)
 
-def collectionExists(name):
+def collectionExists(name: bool):
+    '''
+    name: name of collection
+    return value : (bool) : True or False if collection exists
+    '''
     collections : list[str] = db.list_collection_names()
     if name in collections:
         return True
@@ -51,6 +55,3 @@ def getExchanceInfo():
         createCollection(collName, True, "symbol")
     data = collection.find({})
     return data
-
-if __name__ == "__main__":
-    pass

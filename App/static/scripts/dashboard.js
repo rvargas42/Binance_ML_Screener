@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $("#resizable").resizable({
         handles: "e",
-        minWidth: 100,
+        minWidth: 300,
         maxWidth: 600,
     });
 

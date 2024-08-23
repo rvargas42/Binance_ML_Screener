@@ -6,8 +6,18 @@
         {% if symbol.status == 'TRADING' %}
         <li class="list-asset" data-symbol="{{ symbol.symbol }}">
             <div class="asset-info">
-                {{ symbol.symbol }}
-                {{ symbol.status.capitalize() }}
+                <div class="asset-symbol" style="display: inline-flex;">
+                    {{ symbol.symbol }}
+                    <div class="asset-status-blink" style="margin-left: 10%;"></div>
+                </div>
+                <div class="asset-status"><em>({{ symbol.status.capitalize() }})</em></div>
+                <div class="asset-stats">
+                    <div class="asset-volume">Vol: {{ symbol.symbol}}</div>
+                    <div class="asset-bestBid">bid: {{ symbol.symbol}}</div>
+                    <div class="asset-bestAsk">ask: {{ symbol.symbol}}</div>
+                    <div class="asset-spread">spread: {{ symbol.symbol}}</div>
+                    <div class="asset-close">close: {{ symbol.symbol}}</div>
+                </div>
             </div>
             <div class="symbol-compact-chart" style="border: 1px solid black;"></div>
         </li>

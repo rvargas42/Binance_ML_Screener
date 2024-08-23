@@ -7,7 +7,7 @@ import websockets
 import json
 
 
-class wssBinance:
+class wssClient:
     urls = ["wss://stream.binance.com:9443/ws","wss://stream.binance.com:443/ws"]
     def __init__(self):
         self.connection = None
@@ -65,18 +65,23 @@ class wssBinance:
                 print(f"Error receiving messages: {e}")
                 await asyncio.sleep(5)
 
+    async def run(self):
+        await self.wssConnect()
+        print("running wssClient")
+
 
 if __name__ == "__main__":
-    async def main():
-        binanceWss = wssBinance()
-        await binanceWss.wssConnect()
-        await binanceWss.wssSubscribe({
-                "method": "SUBSCRIBE",
-                "params": [
-                    "!ticker_1h@arr"
-                ],
-                "id": 1
-            })
-        await binanceWss.wssReceiveMsg()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    pass
+    # async def main():
+    #     binanceWss = wssClient()
+    #     await binanceWss.wssConnect()
+    #     await binanceWss.wssSubscribe({
+    #             "method": "SUBSCRIBE",
+    #             "params": [
+    #                 "!ticker_1h@arr"
+    #             ],
+    #             "id": 1
+    #         })
+    #     await binanceWss.wssReceiveMsg()
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(main())
