@@ -126,9 +126,4 @@ class apiClient:
         await self.session.close()
 
 if __name__ == "__main__":
-    # Crear y ejecutar el cliente
-    async def main():
-        client = apiClient("YOUR_API_KEY")
-        await client.run()
-
-    asyncio.run(main())
+    pass

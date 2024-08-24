@@ -29,7 +29,7 @@ def collectionExists(name: bool):
     else:
         return False
 
-def collectionQuery(name : str, query : dict):
+def collectionQuery(name : str, query : dict) -> dict:
     if collectionExists(name):
         collection = db[name]
         data = collection.find(query)
@@ -37,7 +37,7 @@ def collectionQuery(name : str, query : dict):
     else:
         print("No collection named ", name)
 
-def filteredFields(data : json, collName: str) -> dict:
+def filteredFields(data : dict, collName: str) -> dict:
     '''
     Filters a list of documents with given collection name.
     return : list of filtered data
@@ -48,21 +48,21 @@ def filteredFields(data : json, collName: str) -> dict:
         item = filteredElement
     return data
 
-def insertMany(name : str, data : json):
+def insertMany(name : str, data : dict):
     collection = db[name]
     filteredData = filteredFields(data, name)
     collection.insert_many(data)
 
-def updateMany(name: str, data : json):
+def updateMany(name: str, data : dict):
     collection = db[name]
     filteredData = filteredFields(data, name)
     try:
         for item in data:
             result = collection.update_many(filter={"symbol":item.get("symbol")}, upsert=True, update={"$set":item})
             if result.matched_count:
-                print(f"Documento con símbolo {item['symbol']} actualizado.")
+                print(f"MongoDB Client (Update): Symbol Exchange Info {item['symbol']}")
             elif result.upserted_id:
-                print(f"Documento con símbolo {item['symbol']} insertado.")
+                print(f"MongoDB Client (Insert): Symbol Exchange Info {item['symbol']}")
     except Exception as e:
         print("MongoDB client: Problem updating exchange information,", e)
 
