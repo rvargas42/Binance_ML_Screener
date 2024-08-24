@@ -37,13 +37,34 @@ def collectionQuery(name : str, query : dict):
     else:
         print("No collection named ", name)
 
-def filteredFields(data : dict, requiredFields) -> dict:
-    filteredData = {item : data.get(item) for item in requiredFields}
-    return filteredData
+def filteredFields(data : json, collName: str) -> dict:
+    '''
+    Filters a list of documents with given collection name.
+    return : list of filtered data
+    '''
+    requiredFields = db_schemas[collName]["$jsonSchema"]["required"]
+    for item in data:
+        filteredElement = {field : item.get(field) for field in requiredFields}
+        item = filteredElement
+    return data
 
-def insertMany(name : str, data : list[dict]):
+def insertMany(name : str, data : json):
     collection = db[name]
+    filteredData = filteredFields(data, name)
     collection.insert_many(data)
+
+def updateMany(name: str, data : json):
+    collection = db[name]
+    filteredData = filteredFields(data, name)
+    try:
+        for item in data:
+            result = collection.update_many(filter={"symbol":item.get("symbol")}, upsert=True, update={"$set":item})
+            if result.matched_count:
+                print(f"Documento con símbolo {item['symbol']} actualizado.")
+            elif result.upserted_id:
+                print(f"Documento con símbolo {item['symbol']} insertado.")
+    except Exception as e:
+        print("MongoDB client: Problem updating exchange information,", e)
 
 def getExchanceInfo():
     '''

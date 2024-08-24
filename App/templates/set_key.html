@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-<h1>Set API Key</h1>
+<h1>API Key</h1>
+<h3><em>asymetric RSA or ED25519 Keys</em></h3>
     <form action="{{ url_for('set_key') }}" method="post">
         <input type="text" name="api_key" id="api_key" style="width: 300px;" placeholder="Enter API Key">
         <input type="submit" name="set_key" id="set_key" value="Set Key">
     </form>
+    {% with key_error_message = get_flashed_messages(category_filter="Auth_Errors") %}
+    {% if key_error_message %}
+        <div class="flash-key-validity">{{ key_error_message[-1] }}</div>
+    {% endif %}
+    {% endwith %}
+
 {% endblock %}

@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     $("#resizable").resizable({
         handles: "e",
         minWidth: 300,
@@ -9,8 +10,11 @@ $(document).ready(function() {
     {
         filter: "li",
         selecting: function(event, ui){
-            var rest = $(".ui-selected").not(ui.selecting).removeClass("ui-selected");
+            $(".ui-selected").not(ui.selecting).removeClass("ui-selected");
             $(".list-asset").not(".ui-selected").css({"background-color":"white", "border":""});
+        },
+        selected: function(event, ui) {
+            $(ui.selected).addClass("ui-selected").siblings().removeClass("ui-selected");
         },
         stop: function() {
             var selected = $(".ui-selectee.ui-selected");

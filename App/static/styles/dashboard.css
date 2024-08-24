@@ -29,18 +29,17 @@ body{
     width: 30%;
     height: inherit;
     border: 1px solid #ccc;
+    overflow-y: scroll;
+    scrollbar-width: none;
     padding: 10px;
     background-color: #f9f9f9;
 }
 
 .scrollable-list ul {
     list-style-type: none;
-    overflow-y: scroll;
-    scrollbar-width: none;
     padding: 0;
     margin: 0;
     height: inherit;
-    box-shadow: inset;
 }
 
 .scrollable-list li {

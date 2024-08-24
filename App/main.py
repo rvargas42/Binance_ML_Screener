@@ -11,7 +11,7 @@ class App(apiClient, wssClient):
 
     def __init__(self) -> Flask:
         # ----------------------------- Init api and wss ----------------------------- #
-        apiClient.__init__(self, api_key="helloWorld")
+        apiClient.__init__(self, api_key=None)
         wssClient.__init__(self)
         # -------------------------- init app and set config ------------------------- #
         self.app = Flask(__name__)
@@ -25,6 +25,17 @@ class App(apiClient, wssClient):
         self.app.add_url_rule("/", "dashboard", self.dashboard)
         self.app.add_url_rule("/set_key", "set_key", self.set_key, methods=["GET", "POST"])
         self.app.add_url_rule("/handle_selection", "handle_selection", self.handle_selection, methods=["POST", "GET"])
+
+    @staticmethod
+    def key_required(func):
+        '''
+        Decorator that will redirect to set key page if key is none
+        '''
+        def wrapper(self, *args, **kargs):
+            if not self.app.config["API_KEY"]:
+                return redirect(url_for('set_key'))
+            return render_template('dashboard.html')
+        return wrapper
 
     def testing(self):
         exchangeInformation : dict = list(getExchanceInfo())
@@ -41,18 +52,17 @@ class App(apiClient, wssClient):
         print(len([i for i in exchangeInformation if i["status"] == "TRADING"]))
         return render_template("dashboard.html", **context)
 
-    def key_required(func):
-        @wraps(func)
-        def wrapper(*args, **kargs):
-            if not app.config["API_KEY"]:
-                return redirect(url_for('set_key'))
-            return render_template('dashboard.html')
-        return wrapper
-
     def set_key(self):
-        if request.method == "POST" and check_key(key): #TODO: make check_key()
-            key = self.app.config["API_KEY"] = request.form.get("api_key")
-            print(self.app.config["API_KEY"])
+        if request.method == "POST": #TODO: make check_key()
+            if not self.check_key(request.form.get("api_key")):
+                flask.flash(
+                    message="Invalid Key, it should be an RSA or ED25519 asymetric key.\n You can generate a key with the command:\n\tssh-keygen -t ed25519",
+                    category="Auth_Errors"
+                )
+                return redirect(url_for('set_key'))
+            else:
+                self.app.config["API_KEY"] = request.form.get("api_key")
+
             return redirect(url_for('dashboard'))
         return render_template("set_key.html")
 
@@ -64,13 +74,14 @@ class App(apiClient, wssClient):
             session.pop("selected_symbol", None)
         print(session["selected_symbol"])
         return jsonify({'symbol': session["selected_symbol"]}), 200
-    
-    async def run(self, *args, **kargs):
 
-        await wssClient.run(self)
+    async def run(self, *args, **kwargs):
+        '''
+        edit default method and adds all needed clients
+        '''
+        #await wssClient.run(self)
         await apiClient.run(self)
-
-        await self.app.run()
+        await self.app.run(debug=kwargs["debug"])
 
 
 if __name__ == "__main__":
