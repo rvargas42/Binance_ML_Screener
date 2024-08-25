@@ -1,23 +1,18 @@
 import os, json, requests, flask
-import asyncio
+import asyncio, threading
 from flask import Flask, session, render_template, url_for, request, redirect, jsonify
 from functools import wraps
 from ETL_Pipeline.database_utils.database_utils import getExchanceInfo
 from ETL_Pipeline.spot_api_client import apiClient
 from ETL_Pipeline.websocket_client import wssClient
 
+class App:
 
-class App(apiClient, wssClient):
+    def __init__(self):
 
-    def __init__(self) -> Flask:
-        # ----------------------------- Init api and wss ----------------------------- #
-        apiClient.__init__(self, api_key=None)
-        wssClient.__init__(self)
-        # -------------------------- init app and set config ------------------------- #
         self.app = Flask(__name__)
         self.app.config["API_KEY"] = None
         self.app.secret_key = "secret"
-
         self.add_routes()
 
     def add_routes(self):
@@ -75,19 +70,21 @@ class App(apiClient, wssClient):
         print(session["selected_symbol"])
         return jsonify({'symbol': session["selected_symbol"]}), 200
 
-    async def run(self, *args, **kwargs):
+    def run(self, *args, **kwargs):
         '''
         edit default method and adds all needed clients
         '''
-        #await wssClient.run(self)
-        await apiClient.run(self)
-        await self.app.run(debug=kwargs["debug"])
+
+        self.app.run(debug=kwargs["debug"])
 
 
 if __name__ == "__main__":
 
-    async def main():
-        app_instance = App()
-        await app_instance.run(debug=True)
+    def main(): # TODO : Usar threading
+        apiClientInstance = apiClient("hello")
 
+        apiClientInstance.run()
+        app_instance = App()
+        app_instance.run(debug=True)
+    
     asyncio.run(main())

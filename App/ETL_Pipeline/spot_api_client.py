@@ -47,6 +47,14 @@ class apiClient:
         # Initialize aiohttp ClientSession
         self.session = aiohttp.ClientSession()
 
+    @property
+    def currentTime(self):
+        current_time = datetime.now()
+        self.cTimeH = int(current_time.strftime("%H"))
+        self.cTimeM = int(current_time.strftime("%M"))
+        self.cTimeS = int(current_time.strftime("%S"))
+        return current_time
+
     @staticmethod
     def coolDown(func):
         errorCodes = [418, 429]
@@ -112,15 +120,14 @@ class apiClient:
             except Exception as e:
                 print(f"apiClient: Problem updating {ticker} price data:", e)
 
-    async def updater(self):
-        if self.cTimeM % 1 == 0:
-            print("Updating")
-            await self.updateExchangeInfo()
-            #await self.updateKlineData()
-
-    async def run(self):
+    async def run(self): #TODO: implementar threading
         print("Running apiClient")
-        await self.updater()
+        self.currentTime
+        while True:
+            if self.cTimeS % 10 == 0:
+                print(f"apiClient : Updating API data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}")
+                await self.updateExchangeInfo()
+                #await self.updateKlineData()
 
     async def close(self):
         await self.session.close()
