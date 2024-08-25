@@ -30,6 +30,8 @@ class apiClient:
         self.baseEndpoint = None
         self.clientStatus = None
         self.retryAfter = 0
+        self.lastUpdate = {"exhangeInformation":[], "kLineData":[]}
+        self.updatedTickers = []
 
         # ------------------------ get api config information ------------------------ #
         with open(endPointsPath, "r") as endPointsFile:
@@ -64,7 +66,7 @@ class apiClient:
                     response = await func(self, *args, **kwargs)
                     if self.clientStatus in errorCodes:
                         print(f"Cooling down API requests... Sleeping for {self.retryAfter} seconds.")
-                        await asyncio.sleep(self.retryAfter)
+                        await asyncio.sleep(int(self.retryAfter))
                     else:
                         return response
                 except aiohttp.ClientError as e:
@@ -103,31 +105,60 @@ class apiClient:
             response : json = await self.getExchangeInformation()
             data : dict = response["symbols"]
             if not mdb.collectionExists("exchangeInformation"):
-                mdb.createCollection("exchangeInformation", True, "symbol")
+                mdb.createCollection("exchangeInformation", True, primaryKey="symbol")
                 mdb.insertMany("exchangeInformation", data)
             else:
                 mdb.updateMany("exchangeInformation", data)
         except Exception as e:
             print("apiClient: Problem updating exchange information,", e)
-
-    async def updateKlineData(self):
-        exchangeInfo = list(mdb.getExchanceInfo())
-        tickers = [i["symbol"] for i in exchangeInfo if i["status"] == "TRADING"][:1]
-        for ticker in tickers:
-            await asyncio.sleep(1)
+    
+    async def fetchTicker(self, ticker, semaphore):
+        async with semaphore:
             try:
-                data = await self.getKlineData(ticker, interval="1m", limit=1000)
+                response : json = await self.getKlineData(ticker, interval="1m", limit=1000)
+                data : dict = {"symbol" : ticker, "kLinePrice": response}
+                if not mdb.collectionExists("kLineData"):
+                    mdb.createCollection("kLineData", True, primaryKey="symbol")
+                    mdb.insertMany("kLineData", [data])
+                else:
+                    mdb.updateMany("kLineData", [data])
             except Exception as e:
                 print(f"apiClient: Problem updating {ticker} price data:", e)
 
-    async def run(self): #TODO: implementar threading
+        self.updatedTickers.append(ticker)
+
+    async def updateKlineData(self):
+        exchangeInfo = list(mdb.getExchanceInfo())
+        tickers = [i["symbol"] for i in exchangeInfo if i["status"] == "TRADING"]
+        semaphore = asyncio.Semaphore(100)
+        #build task list
+        updateTasks = [self.fetchTicker(ticker, semaphore=semaphore) for ticker in tickers]
+        await asyncio.gather(*updateTasks)
+
+    def setLastUpdate(self, ctime):
+        return [int(ctime.strftime("%H")), int(ctime.strftime("%M")), int(ctime.strftime("%S"))]
+
+    async def run(self):
         print("Running apiClient")
-        self.currentTime
         while True:
-            if self.cTimeS % 10 == 0:
-                print(f"apiClient : Updating API data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}")
-                await self.updateExchangeInfo()
-                #await self.updateKlineData()
+            ctime = self.currentTime
+            #Update Exchange Information every 5 minutes
+            # if self.cTimeM % 5 == 0:
+            #     if self.lastUpdate["exhangeInformation"][1] != self.cTimeM or self.lastUpdate["exhangeInformation"] == None:
+            #         print(f"apiClient : Updating Exchange Information data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}", flush=True)
+            #         self.lastUpdate["exhangeInformation"] = self.setLastUpdate(ctime)
+            #         await self.updateExchangeInfo()
+            #Update price data for 1000 seconds every 5 seconds
+            if self.cTimeM % 1 == 0:
+                last = self.lastUpdate.get("kLineData", None)
+                if (last and last[1] != self.cTimeM) or not last:
+                    print(f"apiClient : Updating kline price data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}", flush=True)
+                    self.lastUpdate["kLineData"] = self.setLastUpdate(ctime)
+                    await self.updateKlineData()
+                    print(f"{len(self.updatedTickers)} updated symbols\n")
+            
+            self.updatedTickers = []
+            await asyncio.sleep(1)
 
     async def close(self):
         await self.session.close()

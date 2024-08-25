@@ -27,7 +27,7 @@
     },
     "kLineData": {
         "method": "GET",
-        "url":"/api/v3/exchangeInfo",
+        "url":"/api/v3/klines",
         "weight": 2,
         "parameters": {
             "symbol": {"type": "str", "mandatory": 1},

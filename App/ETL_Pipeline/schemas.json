@@ -49,6 +49,20 @@
                     }
                 }
             }
+        },
+        "kLineData": {
+          "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["symbol", "kLinePrice"],
+            "properties": {
+              "symbol": {
+                "bsonType": "string"
+              },
+              "kLinePrice":{
+                "bsonType":"array"
+              }
+            }
+          }
         }
     }
 ]

@@ -11,14 +11,14 @@ db = client["binance_screener"]
 with open(os.path.join(os.path.dirname(__file__), "..", "schemas.json"), "r") as schemas:
     db_schemas = json.load(schemas)[0]
 
-def createCollection(name : str, customIndex : bool = False, *args):
+def createCollection(name : str, customIndex : bool = False, *args, **kwargs):
     db.create_collection(name)
     if customIndex == True and args:
         collection = db[name]
-        primaryKey = args[0]
+        primaryKey = args["primaryKey"]
         collection.create_index(primaryKey, unique=True)
 
-def collectionExists(name: bool):
+def collectionExists(name: str):
     '''
     name: name of collection
     return value : (bool) : True or False if collection exists
@@ -60,9 +60,9 @@ def updateMany(name: str, data : dict):
         for item in data:
             result = collection.update_many(filter={"symbol":item.get("symbol")}, upsert=True, update={"$set":item})
             if result.matched_count:
-                print(f"MongoDB Client (Update): Symbol Exchange Info {item['symbol']}")
+                print(f"MongoDB Client (Update): {name} for {item['symbol']}")
             elif result.upserted_id:
-                print(f"MongoDB Client (Insert): Symbol Exchange Info {item['symbol']}")
+                print(f"MongoDB Client (Insert): {name} for {item['symbol']}")
     except Exception as e:
         print("MongoDB client: Problem updating exchange information,", e)
 

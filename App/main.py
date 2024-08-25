@@ -60,7 +60,7 @@ class App:
 
             return redirect(url_for('dashboard'))
         return render_template("set_key.html")
-
+ 
     def handle_selection(self):
         selected_symbol = request.json.get('selected_symbol', "")
         if selected_symbol:
@@ -78,13 +78,24 @@ class App:
         self.app.run(debug=kwargs["debug"])
 
 
+async def runAPIClient():
+    apiClientInstance = apiClient("hello")
+    return await apiClientInstance.run()
+
+def runAPIThread():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(runAPIClient())
+    loop.run_forever()
+
+def main():
+    # Start the apiClient thread
+    apiClient_thread = threading.Thread(target=runAPIThread, name="apiClientThread")
+    apiClient_thread.start()
+
+    # Start the Flask app in the main thread
+    app_instance = App()
+    app_instance.run(debug=True)
+
 if __name__ == "__main__":
-
-    def main(): # TODO : Usar threading
-        apiClientInstance = apiClient("hello")
-
-        apiClientInstance.run()
-        app_instance = App()
-        app_instance.run(debug=True)
-    
-    asyncio.run(main())
+    main()
