@@ -74,7 +74,6 @@ class App:
         '''
         edit default method and adds all needed clients
         '''
-
         self.app.run(debug=kwargs["debug"])
 
 
@@ -93,7 +92,6 @@ def main():
     apiClient_thread = threading.Thread(target=runAPIThread, name="apiClientThread")
     apiClient_thread.start()
 
-    # Start the Flask app in the main thread
     app_instance = App()
     app_instance.run(debug=True)
 

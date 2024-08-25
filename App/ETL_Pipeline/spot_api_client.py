@@ -139,16 +139,14 @@ class apiClient:
         return [int(ctime.strftime("%H")), int(ctime.strftime("%M")), int(ctime.strftime("%S"))]
 
     async def run(self):
-        print("Running apiClient")
         while True:
             ctime = self.currentTime
-            #Update Exchange Information every 5 minutes
-            # if self.cTimeM % 5 == 0:
-            #     if self.lastUpdate["exhangeInformation"][1] != self.cTimeM or self.lastUpdate["exhangeInformation"] == None:
-            #         print(f"apiClient : Updating Exchange Information data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}", flush=True)
-            #         self.lastUpdate["exhangeInformation"] = self.setLastUpdate(ctime)
-            #         await self.updateExchangeInfo()
-            #Update price data for 1000 seconds every 5 seconds
+            if self.cTimeM % 5 == 0:
+                last = self.lastUpdate.get("exhangeInformation", None)
+                if (last and last[1] != self.cTimeM) or not last:
+                    print(f"apiClient : Updating Exchange Information data at : {self.cTimeH}:{self.cTimeM}:{self.cTimeS}", flush=True)
+                    self.lastUpdate["exhangeInformation"] = self.setLastUpdate(ctime)
+                    await self.updateExchangeInfo()
             if self.cTimeM % 1 == 0:
                 last = self.lastUpdate.get("kLineData", None)
                 if (last and last[1] != self.cTimeM) or not last:

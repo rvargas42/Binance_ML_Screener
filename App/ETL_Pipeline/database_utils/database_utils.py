@@ -59,10 +59,6 @@ def updateMany(name: str, data : dict):
     try:
         for item in data:
             result = collection.update_many(filter={"symbol":item.get("symbol")}, upsert=True, update={"$set":item})
-            if result.matched_count:
-                print(f"MongoDB Client (Update): {name} for {item['symbol']}")
-            elif result.upserted_id:
-                print(f"MongoDB Client (Insert): {name} for {item['symbol']}")
     except Exception as e:
         print("MongoDB client: Problem updating exchange information,", e)
 
